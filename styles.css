@@ -131,8 +131,8 @@ th {
     padding: 10px;
     border: 1px solid var(--table-border);
 }
-/* DARK MODE FIXES FOR DEVICES TABLE */
 
+/* DARK MODE FIXES FOR DEVICES TABLE */
 body.dark table {
     background: var(--table-bg);
 }
@@ -159,6 +159,7 @@ body.dark .toner-bar-container {
 body.dark .toner-label {
     color: var(--text);
 }
+
 .spinner {
     width: 20px;
     height: 20px;
@@ -177,6 +178,23 @@ body.dark .spinner {
     border: 3px solid #aaa;
     border-top: 3px solid transparent;
 }
+
+/* DISCOVERY PAGE INPUT + BUTTON STYLES */
+.input-ip {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    width: 70px;
+    margin-left: 5px;
+}
+
+body.dark .input-ip {
+    background: #222;
+    border-color: #555;
+    color: #eee;
+}
+
 #start-btn {
     background: var(--accent);
     color: white;
@@ -191,4 +209,38 @@ body.dark .spinner {
 
 #start-btn:hover {
     background: #005fa3;
+}
+
+.update-btn {
+    background: #8a4fff;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-weight: bold;
+    font-size: 1em;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.3s ease;
+}
+
+.update-btn:hover {
+    background: #6e3cd6;
+}
+
+button[title] {
+    position: relative;
+}
+
+button[title]:hover::after {
+    content: attr(title);
+    position: absolute;
+    top: 110%;
+    left: 0;
+    background: #333;
+    color: white;
+    padding: 5px 10px;
+    font-size: 0.8em;
+    white-space: nowrap;
+    border-radius: 6px;
+    z-index: 10;
 }
