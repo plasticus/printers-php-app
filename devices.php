@@ -86,4 +86,42 @@
                 <div class='toner-bar-container'>
                     <div class='toner-bar' style='background:$color;width:{$value}%;'></div>
                 </div>
-                <div
+                <div class='toner-label'>{$value}%</div>
+            ";
+        }
+
+        $pdo = new PDO("mysql:host=db;dbname=myapp", "myuser", "mypass");
+        $stmt = $pdo->query("SELECT * FROM devices ORDER BY INET_ATON(ip_address) ASC");
+
+        while ($row = $stmt->fetch()) {
+            $toner_black = $row['toner_black'];
+            $toner_cyan = $row['toner_cyan'];
+            $toner_magenta = $row['toner_magenta'];
+            $toner_yellow = $row['toner_yellow'];
+
+            // Highlight row if any toner is < 15%
+            $critical = false;
+            foreach ([$toner_black, $toner_cyan, $toner_magenta, $toner_yellow] as $val) {
+                if (is_numeric($val) && $val >= 0 && $val < 15) {
+                    $critical = true;
+                    break;
+                }
+            }
+
+            $class = $critical ? "class='low-toner'" : "";
+
+            echo "<tr $class>";
+            echo "<td>{$row['ip_address']}</td>";
+            echo "<td>{$row['model']}</td>";
+            echo "<td>{$row['page_count']}</td>";
+            echo "<td>" . render_toner_bar($toner_black) . "</td>";
+            echo "<td>" . render_toner_bar($toner_cyan) . "</td>";
+            echo "<td>" . render_toner_bar($toner_magenta) . "</td>";
+            echo "<td>" . render_toner_bar($toner_yellow) . "</td>";
+            echo "<td>{$row['last_seen']}</td>";
+            echo "</tr>";
+        }
+        ?>
+    </table>
+</body>
+</html>
