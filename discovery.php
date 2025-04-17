@@ -17,9 +17,13 @@
     <div id="spinner" class="spinner" style="display: none;"></div>
 </h1>
 
-<form id="discovery-form" onsubmit="startDiscovery(); return false;">
-    <label>Start IP: <input type="number" id="start-ip" value="50" min="1" max="254"></label>
-    <label>End IP: <input type="number" id="end-ip" value="99" min="1" max="254"></label>
+<form id="discovery-form" onsubmit="startDiscovery(); return false;" style="display: flex; gap: 15px; align-items: center; margin-bottom: 20px;">
+    <label>Start IP:
+        <input class="input-ip" type="number" id="start-ip" value="50" min="1" max="254">
+    </label>
+    <label>End IP:
+        <input class="input-ip" type="number" id="end-ip" value="99" min="1" max="254">
+    </label>
     <button id="start-btn" type="submit">🚀 Start Discovery</button>
 </form>
 
@@ -88,6 +92,22 @@ async function scanOne(ip, progressCount, total) {
     }
 }
 </script>
+
+<style>
+.input-ip {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 1em;
+    width: 70px;
+    margin-left: 5px;
+}
+body.dark .input-ip {
+    background: #222;
+    border-color: #555;
+    color: #eee;
+}
+</style>
 
 </body>
 </html>

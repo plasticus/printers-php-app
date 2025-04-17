@@ -73,6 +73,9 @@
 
         $class = $critical ? "class='low-toner'" : "";
         $ip = htmlspecialchars($row['ip_address']);
+        $user_model = htmlspecialchars($row['user_model'] ?? '');
+        $location = htmlspecialchars($row['location'] ?? '');
+        $notes = htmlspecialchars($row['notes'] ?? '');
 
         echo "<form method='post'>
             <input type='hidden' name='ip' value='{$ip}'>
@@ -85,9 +88,9 @@
                 <td>" . render_toner_bar($row['toner_magenta']) . "</td>
                 <td>" . render_toner_bar($row['toner_yellow']) . "</td>
                 <td>{$row['last_seen']}</td>
-                <td><input type='text' name='user_model' value='" . htmlspecialchars($row['user_model']) . "'></td>
-                <td><input type='text' name='location' value='" . htmlspecialchars($row['location']) . "'></td>
-                <td><input type='text' name='notes' value='" . htmlspecialchars($row['notes']) . "'></td>
+                <td><input type='text' name='user_model' value='{$user_model}'></td>
+                <td><input type='text' name='location' value='{$location}'></td>
+                <td><input type='text' name='notes' value='{$notes}'></td>
                 <td><button type='submit'>💾 Save</button></td>
             </tr>
         </form>";
