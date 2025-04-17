@@ -7,6 +7,20 @@
     <title>Devices</title>
     <meta charset="UTF-8">
     <link rel="stylesheet" href="styles.css">
+    <style>
+        input[type="text"] {
+            padding: 6px;
+            border: 1px solid #ccc;
+            border-radius: 6px;
+            font-size: 0.9em;
+            width: 100px;
+        }
+        body.dark input[type="text"] {
+            background: #222;
+            border-color: #555;
+            color: #eee;
+        }
+    </style>
 </head>
 <body>
 
@@ -24,7 +38,6 @@
         <th>Toner (Magenta)</th>
         <th>Toner (Yellow)</th>
         <th>Last Seen</th>
-        <th>Custom Model</th>
         <th>Location</th>
         <th>Notes</th>
         <th>Edit</th>
@@ -73,7 +86,6 @@
 
         $class = $critical ? "class='low-toner'" : "";
         $ip = htmlspecialchars($row['ip_address']);
-        $user_model = htmlspecialchars($row['user_model'] ?? '');
         $location = htmlspecialchars($row['location'] ?? '');
         $notes = htmlspecialchars($row['notes'] ?? '');
 
@@ -88,7 +100,6 @@
                 <td>" . render_toner_bar($row['toner_magenta']) . "</td>
                 <td>" . render_toner_bar($row['toner_yellow']) . "</td>
                 <td>{$row['last_seen']}</td>
-                <td><input type='text' name='user_model' value='{$user_model}'></td>
                 <td><input type='text' name='location' value='{$location}'></td>
                 <td><input type='text' name='notes' value='{$notes}'></td>
                 <td><button type='submit'>💾 Save</button></td>
