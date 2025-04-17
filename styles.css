@@ -131,3 +131,31 @@ th {
     padding: 10px;
     border: 1px solid var(--table-border);
 }
+/* DARK MODE FIXES FOR DEVICES TABLE */
+
+body.dark table {
+    background: var(--table-bg);
+}
+
+body.dark th {
+    background: var(--th-bg);
+    color: var(--text);
+}
+
+body.dark td {
+    background: var(--table-bg);
+    color: var(--text);
+}
+
+body.dark .low-toner {
+    background-color: #441111;
+}
+
+body.dark .toner-bar-container {
+    background: #444;
+    border-color: #555;
+}
+
+body.dark .toner-label {
+    color: var(--text);
+}
