@@ -27,9 +27,27 @@
             border: 1px solid #aaa;
             padding: 8px;
             text-align: left;
+            vertical-align: middle;
         }
         th {
             background-color: #eee;
+        }
+        .low-toner {
+            background-color: #ffe0e0;
+        }
+        .toner-bar-container {
+            background: #eee;
+            width: 100px;
+            border: 1px solid #ccc;
+            height: 12px;
+            position: relative;
+        }
+        .toner-bar {
+            height: 100%;
+        }
+        .toner-label {
+            font-size: 0.75em;
+            color: #555;
         }
     </style>
 </head>
@@ -47,24 +65,25 @@
             <th>IP Address</th>
             <th>Model</th>
             <th>Page Count</th>
+            <th>Toner (Black)</th>
+            <th>Toner (Cyan)</th>
+            <th>Toner (Magenta)</th>
+            <th>Toner (Yellow)</th>
             <th>Last Seen</th>
         </tr>
 
         <?php
-        $pdo = new PDO("mysql:host=db;dbname=myapp", "myuser", "mypass");
+        function render_toner_bar($value) {
+            if (!is_numeric($value) || $value < 0 || $value > 100) {
+                return "<span class='toner-label'>Unknown</span>";
+            }
 
-        // Convert IP string to integer for proper sorting
-        $stmt = $pdo->query("SELECT * FROM devices ORDER BY INET_ATON(ip_address) ASC");
+            $color = '#4caf50'; // green
+            if ($value < 30) $color = '#ff9800'; // orange
+            if ($value < 15) $color = '#f44336'; // red
 
-        while ($row = $stmt->fetch()) {
-            echo "<tr>
-                    <td>{$row['ip_address']}</td>
-                    <td>{$row['model']}</td>
-                    <td>{$row['page_count']}</td>
-                    <td>{$row['last_seen']}</td>
-                  </tr>";
-        }
-        ?>
-    </table>
-</body>
-</html>
+            return "
+                <div class='toner-bar-container'>
+                    <div class='toner-bar' style='background:$color;width:{$value}%;'></div>
+                </div>
+                <div
