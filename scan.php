@@ -24,9 +24,7 @@ function get_toner_percentage($ip, $descriptionMatch = "Black Toner") {
     if (!$descWalk || !$maxWalk || !$currWalk) return null;
 
     foreach ($descWalk as $line) {
-        if (preg_match('/\.(\d+)\s*=\s*STRING:\s*"(.*?)"/', $line, $matches)) {
-        
-
+        if (strpos($line, 'STRING:') !== false && preg_match('/(\\d+)\\s*=\\s*STRING:\\s*"(.*?)"/', $line, $matches)) {      
 
             $index = $matches[1];
             $desc = $matches[2];
