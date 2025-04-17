@@ -20,7 +20,7 @@
     <script>
         const start = 50;
         const end = 99;
-        const maxConcurrent = 5;
+        const maxConcurrent = 10;
         let currentIp = start;
 
         async function startDiscovery() {
