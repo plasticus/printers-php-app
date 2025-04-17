@@ -1,102 +1,104 @@
 <?php
 // scan.php
-$ip = $_GET['ip'] ?? '';
+
 $community = "public";
+
+function snmp_get_value($ip, $oid) {
+    return @snmpget($ip, "public", $oid);
+}
 
 function clean_snmp_string($val) {
     $val = trim($val);
     $val = preg_replace('/^(STRING|Counter32):\s*/', '', $val);
-    $val = trim($val, '"');
-    return $val;
+    return trim($val, '"');
 }
 
-function get_supply_levels($ip, $community) {
-    $supplies = [];
+function get_toner_percentage($ip, $descriptionMatch = "Black Toner") {
+    $descWalk = @snmpwalk($ip, "public", "1.3.6.1.2.1.43.11.1.1.6");
+    $maxWalk  = @snmpwalk($ip, "public", "1.3.6.1.2.1.43.11.1.1.8");
+    $currWalk = @snmpwalk($ip, "public", "1.3.6.1.2.1.43.11.1.1.9");
 
-    for ($i = 1; $i <= 10; $i++) {
-        $desc = @snmpget($ip, $community, "1.3.6.1.2.1.43.11.1.1.6.1.$i");
-        $level = @snmpget($ip, $community, "1.3.6.1.2.1.43.11.1.1.9.1.$i");
+    if (!$descWalk || !$maxWalk || !$currWalk) return null;
 
-        if (!$desc || !$level) continue;
+    foreach ($descWalk as $line) {
+        if (preg_match('/\.(\d+)]? = STRING: \"(.*?)\"/', $line, $matches)) {
+            $index = $matches[1];
+            $desc = $matches[2];
 
-        $desc = strtolower(clean_snmp_string($desc));
-        $level = (int) filter_var(clean_snmp_string($level), FILTER_SANITIZE_NUMBER_INT);
+            if (stripos($desc, $descriptionMatch) !== false) {
+                $max = null;
+                $curr = null;
 
-        if (str_contains($desc, "black"))      $supplies['toner_black'] = $level;
-        elseif (str_contains($desc, "cyan"))   $supplies['toner_cyan'] = $level;
-        elseif (str_contains($desc, "magenta"))$supplies['toner_magenta'] = $level;
-        elseif (str_contains($desc, "yellow")) $supplies['toner_yellow'] = $level;
+                foreach ($maxWalk as $m) {
+                    if (strpos($m, ".$index") !== false && preg_match('/INTEGER: (\d+)/', $m, $mm)) {
+                        $max = (int) $mm[1];
+                    }
+                }
+                foreach ($currWalk as $c) {
+                    if (strpos($c, ".$index") !== false && preg_match('/INTEGER: (-?\d+)/', $c, $cc)) {
+                        $curr = (int) $cc[1];
+                    }
+                }
+
+                if ($max > 0 && $curr >= 0) {
+                    return round(($curr / $max) * 100);
+                }
+            }
+        }
     }
 
-    return $supplies;
+    return null;
 }
 
+$ip = $_GET['ip'] ?? '';
+$mode = $_GET['mode'] ?? 'discover';
+
 if (!$ip) {
-    echo json_encode(["error" => "No IP provided"]);
+    echo json_encode(["status" => "No IP specified"]);
     exit;
 }
 
-$model        = @snmpget($ip, $community, "1.3.6.1.2.1.25.3.2.1.3.1");
-$manufacturer = @snmpget($ip, $community, "1.3.6.1.2.1.1.1.0");
-$page_count   = @snmpget($ip, $community, "1.3.6.1.2.1.43.10.2.1.4.1.1");
+$model = clean_snmp_string(snmp_get_value($ip, "1.3.6.1.2.1.25.3.2.1.3.1"));
+$manufacturer = clean_snmp_string(snmp_get_value($ip, "1.3.6.1.2.1.1.1.0"));
+$serial = clean_snmp_string(snmp_get_value($ip, "1.3.6.1.2.1.43.5.1.1.17.1"));
+$page_count = (int) filter_var(clean_snmp_string(snmp_get_value($ip, "1.3.6.1.2.1.43.10.2.1.4.1.1")), FILTER_SANITIZE_NUMBER_INT);
+$toner_black = (int) filter_var(clean_snmp_string(snmp_get_value($ip, "1.3.6.1.2.1.43.11.1.1.9.1.1")), FILTER_SANITIZE_NUMBER_INT);
+
+if (stripos($manufacturer, 'Xerox') !== false && !$toner_black) {
+    $toner_black = get_toner_percentage($ip);
+}
 
 if ($model || $manufacturer) {
     $pdo = new PDO("mysql:host=db;dbname=myapp", "myuser", "mypass");
 
-    $stmt = $pdo->prepare("SELECT user_model, notes, location FROM devices WHERE ip_address = ?");
-    $stmt->execute([$ip]);
-    $existing = $stmt->fetch(PDO::FETCH_ASSOC) ?: [];
+    if ($mode === 'discover') {
+        $stmt = $pdo->prepare("INSERT INTO devices (ip_address, manufacturer, model, serial_number, toner_black, page_count)
+                               VALUES (?, ?, ?, ?, ?, ?)
+                               ON DUPLICATE KEY UPDATE
+                               manufacturer = VALUES(manufacturer),
+                               model = VALUES(model),
+                               serial_number = VALUES(serial_number),
+                               toner_black = VALUES(toner_black),
+                               page_count = VALUES(page_count),
+                               last_seen = CURRENT_TIMESTAMP");
+        $stmt->execute([$ip, $manufacturer, $model, $serial, $toner_black, $page_count]);
+    }
 
-    $user_model = $existing['user_model'] ?? null;
-    $notes = $existing['notes'] ?? null;
-    $location = $existing['location'] ?? null;
+    if ($mode === 'update') {
+        $stmt = $pdo->prepare("INSERT INTO page_history (ip_address, model, serial_number, page_count) VALUES (?, ?, ?, ?)");
+        $stmt->execute([$ip, $model, $serial, $page_count]);
 
-    $toner_black = null;
-    $toner_cyan = null;
-    $toner_magenta = null;
-    $toner_yellow = null;
-
-    $supplies = get_supply_levels($ip, $community);
-    extract($supplies);
-
-    $stmt = $pdo->prepare("INSERT INTO devices 
-        (ip_address, manufacturer, model, toner_black, toner_cyan, toner_magenta, toner_yellow, page_count, user_model, notes, location)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        ON DUPLICATE KEY UPDATE
-            manufacturer = VALUES(manufacturer),
-            model = VALUES(model),
-            toner_black = VALUES(toner_black),
-            toner_cyan = VALUES(toner_cyan),
-            toner_magenta = VALUES(toner_magenta),
-            toner_yellow = VALUES(toner_yellow),
-            page_count = VALUES(page_count),
-            last_seen = CURRENT_TIMESTAMP,
-            user_model = COALESCE(VALUES(user_model), user_model),
-            notes = COALESCE(VALUES(notes), notes),
-            location = COALESCE(VALUES(location), location)");
-
-    $stmt->execute([
-        $ip,
-        clean_snmp_string($manufacturer),
-        clean_snmp_string($model),
-        $toner_black,
-        $toner_cyan,
-        $toner_magenta,
-        $toner_yellow,
-        (int) filter_var(clean_snmp_string($page_count), FILTER_SANITIZE_NUMBER_INT),
-        $user_model,
-        $notes,
-        $location
-    ]);
+        $stmt2 = $pdo->prepare("UPDATE devices SET model = ?, serial_number = ?, page_count = ?, toner_black = ?, last_seen = CURRENT_TIMESTAMP WHERE ip_address = ?");
+        $stmt2->execute([$model, $serial, $page_count, $toner_black, $ip]);
+    }
 
     echo json_encode([
-        "ip" => $ip,
-        "model" => clean_snmp_string($model),
-        "status" => "Printer found and saved"
+        "status" => "✔ Found",
+        "model" => $model,
+        "page_count" => $page_count,
+        "toner_black" => $toner_black,
     ]);
 } else {
-    echo json_encode([
-        "ip" => $ip,
-        "status" => "No response"
-    ]);
+    echo json_encode(["status" => "No SNMP response"]);
 }
+?>
