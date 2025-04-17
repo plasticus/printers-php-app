@@ -9,7 +9,11 @@
 
     <?php include("nav.php"); ?>
 
-    <h1>Live Discovery</h1>
+    <h1 style="display: flex; align-items: center; gap: 10px;">
+        Live Discovery
+        <div id="spinner" class="spinner" style="display: none;"></div>
+    </h1>
+
 
     <button onclick="startDiscovery()">Start Discovery</button>
 
@@ -24,6 +28,7 @@
         let currentIp = start;
 
         async function startDiscovery() {
+            document.getElementById('spinner').style.display = 'inline-block';
             document.getElementById('log').innerHTML = '';
             document.querySelector('#progressBar div').style.width = '0%';
             document.getElementById('progressText').textContent = '';
@@ -45,6 +50,7 @@
                     await scanBatch();
                 } else {
                     document.getElementById('progressText').textContent = "Scan complete!";
+                    document.getElementById('spinner').style.display = 'none';
                 }
             }
 

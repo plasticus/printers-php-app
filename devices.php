@@ -56,8 +56,9 @@
             $class = $critical ? "class='low-toner'" : "";
 
             echo "<tr $class>";
-            echo "<td>{$row['ip_address']}</td>";
-            echo "<td>{$row['model']}</td>";
+            $ip = htmlspecialchars($row['ip_address']);
+            echo "<td><a href=\"http://$ip\" target=\"_blank\">$ip</a></td>";
+                        echo "<td>{$row['model']}</td>";
             echo "<td>{$row['page_count']}</td>";
             echo "<td>" . render_toner_bar($row['toner_black']) . "</td>";
             echo "<td>" . render_toner_bar($row['toner_cyan']) . "</td>";
