@@ -212,7 +212,7 @@ body.dark .spinner {
 }
 
 #update-btn {
-    background: purple;
+    background: #6a1b9a; /* rich purple */
     color: white;
     border: none;
     padding: 10px 20px;
@@ -225,5 +225,20 @@ body.dark .spinner {
 }
 
 #update-btn:hover {
-    background: rebeccapurple;
+    background: #8e24aa; /* lighter purple */
+}
+
+input[type="text"] {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--table-border);
+    font-size: 1em;
+    color: var(--text);
+    background: var(--table-bg);
+    transition: border-color 0.2s ease;
+}
+
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
 }
