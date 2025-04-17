@@ -64,7 +64,7 @@
     $pdo = new PDO("mysql:host=db;dbname=myapp", "myuser", "mypass");
 
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-        $stmt = $pdo->prepare("UPDATE devices SET user_model = ?, location = ?, notes = ? WHERE ip_address = ?");
+        $stmt = $pdo->prepare("UPDATE devices SET location = ?, notes = ? WHERE ip_address = ?");
         $stmt->execute([
             $_POST['location'],
             $_POST['notes'],
