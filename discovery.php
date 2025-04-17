@@ -25,7 +25,7 @@
         <input class="input-ip" type="number" id="end-ip" value="99" min="1" max="254">
     </label>
     <button id="start-btn" type="submit">🚀 Discover</button>
-    <button type="button" class="update-btn" onclick="startUpdate()" title="Only scans known devices to track impressions over time">↻ Update</button>
+    <button type="update-btn" class="update-btn" onclick="startUpdate()" title="Only scans known devices to track impressions over time">↻ Update</button>
 </form>
 
 <div id="progressBar"><div></div></div>

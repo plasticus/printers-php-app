@@ -166,13 +166,15 @@ body.dark .toner-label {
 }
 
 body.dark input[type="text"],
+body.dark input[type="number"],
 body.dark textarea {
     background-color: #222;
     color: #eee;
     border: 1px solid #555;
 }
 
-body.dark input[type="text"]::placeholder {
+body.dark input[type="text"]::placeholder,
+body.dark input[type="number"]::placeholder {
     color: #888;
 }
 
