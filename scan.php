@@ -1,5 +1,6 @@
 <?php
 // scan.php
+file_put_contents('/tmp/snmp_debug.log', '');
 
 $community = "public";
 
@@ -11,47 +12,6 @@ function clean_snmp_string($val) {
     $val = trim($val);
     $val = preg_replace('/^(STRING|Counter32):\s*/', '', $val);
     return trim($val, '"');
-}
-
-function get_toner_percentage($ip, $descriptionMatch = "Black Toner") {
-    file_put_contents('/tmp/snmp_debug.log', "[{$ip}] Starting toner fallback\n", FILE_APPEND);
-    $descWalk = @snmpwalk($ip, "public", "1.3.6.1.2.1.43.11.1.1.6");
-    $maxWalk  = @snmpwalk($ip, "public", "1.3.6.1.2.1.43.11.1.1.8");
-    $currWalk = @snmpwalk($ip, "public", "1.3.6.1.2.1.43.11.1.1.9");
-
-    if (!$descWalk || !$maxWalk || !$currWalk) return null;
-
-    foreach ($descWalk as $line) {
-        if (strpos($line, 'STRING:') !== false && preg_match('/(\d+)\s*=\s*STRING:\s*"(.*?)"/', $line, $matches)) {
-            $index = $matches[1];
-            $desc = $matches[2];
-
-            file_put_contents('/tmp/snmp_debug.log', "[{$ip}] Found toner description match: Index {$index}, Desc: {$desc}\n", FILE_APPEND);
-
-            if ((stripos($desc, 'Black') !== false) && (stripos($desc, 'Toner') !== false)) {
-                $max = null;
-                $curr = null;
-
-                foreach ($maxWalk as $m) {
-                    if (strpos($m, ".$index") !== false && preg_match('/INTEGER: (\d+)/', $m, $mm)) {
-                        $max = (int) $mm[1];
-                    }
-                }
-                foreach ($currWalk as $c) {
-                    if (strpos($c, ".$index") !== false && preg_match('/INTEGER: (-?\d+)/', $c, $cc)) {
-                        $curr = (int) $cc[1];
-                    }
-                }
-
-                file_put_contents('/tmp/snmp_debug.log', "[{$ip}] Max: {$max}, Curr: {$curr}\n", FILE_APPEND);
-                if ($max > 0 && $curr >= 0) {
-                    return round(($curr / $max) * 100);
-                }
-            }
-        }
-    }
-
-    return null;
 }
 
 $ip = $_GET['ip'] ?? '';
@@ -69,11 +29,6 @@ $page_count = (int) filter_var(clean_snmp_string(snmp_get_value($ip, "1.3.6.1.2.
 $toner_black = (int) filter_var(clean_snmp_string(snmp_get_value($ip, "1.3.6.1.2.1.43.11.1.1.9.1.1")), FILTER_SANITIZE_NUMBER_INT);
 
 file_put_contents('/tmp/snmp_debug.log', "[{$ip}] Raw toner_black: {$toner_black}\n", FILE_APPEND);
-
-if (stripos($manufacturer, 'Xerox') !== false && ($toner_black <= 0 || $toner_black > 100)) {
-    $toner_black = get_toner_percentage($ip);
-    file_put_contents('/tmp/snmp_debug.log', "[{$ip}] Xerox toner fallback: {$toner_black}\n", FILE_APPEND);
-}
 
 if ($model || $manufacturer) {
     $pdo = new PDO("mysql:host=db;dbname=myapp", "myuser", "mypass");
