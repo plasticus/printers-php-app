@@ -3,10 +3,47 @@
 <head>
     <title>Live Discovery</title>
     <style>
-        body { font-family: sans-serif; margin: 20px; }
-        #progressBar { width: 100%; background: #ddd; margin-top: 10px; }
-        #progressBar div { height: 20px; background: #4caf50; width: 0%; }
-        .log { font-family: monospace; margin-top: 20px; max-height: 400px; overflow-y: scroll; background: #f4f4f4; padding: 10px; border: 1px solid #ccc; }
+        body {
+            font-family: sans-serif;
+            margin: 20px;
+        }
+        nav {
+            margin-bottom: 20px;
+        }
+        nav a {
+            margin-right: 20px;
+            text-decoration: none;
+            font-weight: bold;
+            color: #333;
+        }
+        nav a:hover {
+            text-decoration: underline;
+        }
+        #progressBar {
+            width: 100%;
+            background: #ddd;
+            margin-top: 10px;
+        }
+        #progressBar div {
+            height: 20px;
+            background: #4caf50;
+            width: 0%;
+            transition: width 0.2s ease;
+        }
+        #progressText {
+            margin-top: 5px;
+            font-size: 0.9em;
+            color: #555;
+        }
+        .log {
+            font-family: monospace;
+            margin-top: 20px;
+            max-height: 400px;
+            overflow-y: scroll;
+            background: #f4f4f4;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
     </style>
 </head>
 <body>
@@ -27,38 +64,58 @@
     <script>
         const start = 50;
         const end = 99;
-        let current = start;
+        const maxConcurrent = 5;
+        let currentIp = start;
 
         async function startDiscovery() {
             document.getElementById('log').innerHTML = '';
-            current = start;
-            await scanNext();
+            document.querySelector('#progressBar div').style.width = '0%';
+            document.getElementById('progressText').textContent = '';
+            currentIp = start;
+            await scanRange();
         }
 
-        async function scanNext() {
-            if (current > end) {
-                document.getElementById('progressText').textContent = "Scan complete!";
-                return;
+        async function scanRange() {
+            const total = end - start + 1;
+
+            async function scanBatch() {
+                const batch = [];
+                for (let i = 0; i < maxConcurrent && currentIp <= end; i++, currentIp++) {
+                    const ip = `10.23.0.${currentIp}`;
+                    batch.push(scanOne(ip, currentIp - start + 1, total));
+                }
+                await Promise.all(batch);
+                if (currentIp <= end) {
+                    await scanBatch();
+                } else {
+                    document.getElementById('progressText').textContent = "Scan complete!";
+                }
             }
 
-            const ip = `10.23.0.${current}`;
-            const res = await fetch(`scan.php?ip=${ip}`);
-            const data = await res.json();
+            await scanBatch();
+        }
 
-            let logEntry = `[${ip}] ${data.status}`;
-            if (data.model) logEntry += ` – ${data.model}`;
+        async function scanOne(ip, progressCount, total) {
+            try {
+                const res = await fetch(`scan.php?ip=${ip}`);
+                const data = await res.json();
 
-            const log = document.getElementById('log');
-            log.innerHTML += logEntry + "<br>";
-            log.scrollTop = log.scrollHeight;
+                let logEntry = `[${ip}] ${data.status}`;
+                if (data.model) logEntry += ` – ${data.model}`;
 
-            const progress = ((current - start + 1) / (end - start + 1)) * 100;
-            document.querySelector('#progressBar div').style.width = progress + "%";
-            document.getElementById('progressText').textContent = `${Math.round(progress)}% (${ip})`;
+                const log = document.getElementById('log');
+                log.innerHTML += logEntry + "<br>";
+                log.scrollTop = log.scrollHeight;
 
-            current++;
-            setTimeout(scanNext, 300); // Adjust timing for responsiveness
+                const percent = Math.round((progressCount / total) * 100);
+                document.querySelector('#progressBar div').style.width = percent + "%";
+                document.getElementById('progressText').textContent = `${percent}% (${ip})`;
+            } catch (err) {
+                const log = document.getElementById('log');
+                log.innerHTML += `[${ip}] ⚠️ Error<br>`;
+            }
         }
     </script>
+
 </body>
 </html>
