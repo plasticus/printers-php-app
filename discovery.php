@@ -2,56 +2,12 @@
 <html>
 <head>
     <title>Live Discovery</title>
-    <style>
-        body {
-            font-family: sans-serif;
-            margin: 20px;
-        }
-        nav {
-            margin-bottom: 20px;
-        }
-        nav a {
-            margin-right: 20px;
-            text-decoration: none;
-            font-weight: bold;
-            color: #333;
-        }
-        nav a:hover {
-            text-decoration: underline;
-        }
-        #progressBar {
-            width: 100%;
-            background: #ddd;
-            margin-top: 10px;
-        }
-        #progressBar div {
-            height: 20px;
-            background: #4caf50;
-            width: 0%;
-            transition: width 0.2s ease;
-        }
-        #progressText {
-            margin-top: 5px;
-            font-size: 0.9em;
-            color: #555;
-        }
-        .log {
-            font-family: monospace;
-            margin-top: 20px;
-            max-height: 400px;
-            overflow-y: scroll;
-            background: #f4f4f4;
-            padding: 10px;
-            border: 1px solid #ccc;
-        }
-    </style>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="styles.css">
 </head>
 <body>
 
-    <nav>
-        <a href="discovery.php">Discovery</a>
-        <a href="devices.php">Devices</a>
-    </nav>
+    <?php include("nav.php"); ?>
 
     <h1>Live Discovery</h1>
 

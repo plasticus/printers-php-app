@@ -1,0 +1,133 @@
+:root {
+    --bg: #f9f9f9;
+    --text: #333;
+    --accent: #007acc;
+    --nav-bg: #ffffff;
+    --nav-border: #ddd;
+    --table-bg: #ffffff;
+    --table-border: #ddd;
+    --th-bg: #f1f1f1;
+    --log-bg: #f4f4f4;
+    --toner-low: #f44336;
+    --toner-med: #ff9800;
+    --toner-ok: #4caf50;
+}
+
+body.dark {
+    --bg: #121212;
+    --text: #e0e0e0;
+    --accent: #4db8ff;
+    --nav-bg: #1e1e1e;
+    --nav-border: #333;
+    --table-bg: #1c1c1c;
+    --table-border: #333;
+    --th-bg: #2a2a2a;
+    --log-bg: #222;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    margin: 0;
+    padding: 20px;
+}
+
+.main-nav {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    background: var(--nav-bg);
+    padding: 15px 20px;
+    border-bottom: 2px solid var(--nav-border);
+    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    margin: -20px -20px 20px -20px;
+}
+
+.main-nav .links {
+    display: flex;
+    gap: 20px;
+}
+
+.main-nav a {
+    text-decoration: none;
+    color: var(--text);
+    font-weight: bold;
+    font-size: 1.05em;
+    transition: color 0.2s ease;
+}
+
+.main-nav a:hover {
+    color: var(--accent);
+}
+
+.toggle-theme {
+    cursor: pointer;
+    font-size: 1.3em;
+    user-select: none;
+}
+
+table {
+    border-collapse: collapse;
+    width: 100%;
+    background: var(--table-bg);
+    box-shadow: 0 0 4px rgba(0,0,0,0.04);
+}
+
+th, td {
+    border: 1px solid var(--table-border);
+    padding: 10px;
+    text-align: left;
+    vertical-align: middle;
+}
+
+th {
+    background-color: var(--th-bg);
+}
+
+.low-toner {
+    background-color: #ffecec;
+}
+
+.toner-bar-container {
+    background: #eee;
+    width: 100px;
+    border: 1px solid #ccc;
+    height: 12px;
+    position: relative;
+}
+
+.toner-bar {
+    height: 100%;
+}
+
+.toner-label {
+    font-size: 0.75em;
+    color: var(--text);
+}
+
+#progressBar {
+    width: 100%;
+    background: #ddd;
+    margin-top: 10px;
+}
+#progressBar div {
+    height: 20px;
+    background: var(--accent);
+    width: 0%;
+    transition: width 0.2s ease;
+}
+#progressText {
+    margin-top: 5px;
+    font-size: 0.9em;
+    color: var(--text);
+}
+.log {
+    font-family: monospace;
+    margin-top: 20px;
+    max-height: 400px;
+    overflow-y: scroll;
+    background: var(--log-bg);
+    padding: 10px;
+    border: 1px solid var(--table-border);
+}
