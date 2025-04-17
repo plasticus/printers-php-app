@@ -66,7 +66,6 @@
     if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $stmt = $pdo->prepare("UPDATE devices SET user_model = ?, location = ?, notes = ? WHERE ip_address = ?");
         $stmt->execute([
-            $_POST['user_model'],
             $_POST['location'],
             $_POST['notes'],
             $_POST['ip']
