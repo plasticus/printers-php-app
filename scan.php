@@ -1,6 +1,5 @@
 <?php
 // scan.php
-file_put_contents('/tmp/snmp_debug.log', '');
 
 $community = "public";
 
