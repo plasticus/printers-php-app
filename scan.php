@@ -1,6 +1,6 @@
 <?php
 // scan.php
-
+file_put_contents('/tmp/snmp_debug.log', '');
 
 $community = "public";
 
@@ -15,8 +15,7 @@ function clean_snmp_string($val) {
 }
 
 function get_toner_percentage($ip, $descriptionMatch = "Black Toner") {
-    file_put_contents('/tmp/snmp_debug.log', "[{$ip}] Starting toner fallback
-", FILE_APPEND);
+    file_put_contents('/tmp/snmp_debug.log', "[{$ip}] Starting toner fallback\n", FILE_APPEND);
     $descWalk = @snmpwalk($ip, "public", "1.3.6.1.2.1.43.11.1.1.6");
     $maxWalk  = @snmpwalk($ip, "public", "1.3.6.1.2.1.43.11.1.1.8");
     $currWalk = @snmpwalk($ip, "public", "1.3.6.1.2.1.43.11.1.1.9");
@@ -24,14 +23,13 @@ function get_toner_percentage($ip, $descriptionMatch = "Black Toner") {
     if (!$descWalk || !$maxWalk || !$currWalk) return null;
 
     foreach ($descWalk as $line) {
-        if (strpos($line, 'STRING:') !== false && preg_match('/(\\d+)\\s*=\\s*STRING:\\s*"(.*?)"/', $line, $matches)) {      
-
+        if (strpos($line, 'STRING:') !== false && preg_match('/(\d+)\s*=\s*STRING:\s*"(.*?)"/', $line, $matches)) {
             $index = $matches[1];
             $desc = $matches[2];
 
-            file_put_contents('/tmp/snmp_debug.log', "[{$ip}] Found toner description match: Index {$index}, Desc: {$desc}
-", FILE_APPEND);
-            if (stripos($desc, $descriptionMatch) !== false) {
+            file_put_contents('/tmp/snmp_debug.log', "[{$ip}] Found toner description match: Index {$index}, Desc: {$desc}\n", FILE_APPEND);
+
+            if ((stripos($desc, 'Black') !== false) && (stripos($desc, 'Toner') !== false)) {
                 $max = null;
                 $curr = null;
 
@@ -46,8 +44,7 @@ function get_toner_percentage($ip, $descriptionMatch = "Black Toner") {
                     }
                 }
 
-                file_put_contents('/tmp/snmp_debug.log', "[{$ip}] Max: {$max}, Curr: {$curr}
-", FILE_APPEND);
+                file_put_contents('/tmp/snmp_debug.log', "[{$ip}] Max: {$max}, Curr: {$curr}\n", FILE_APPEND);
                 if ($max > 0 && $curr >= 0) {
                     return round(($curr / $max) * 100);
                 }
