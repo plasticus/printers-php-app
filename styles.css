@@ -1,3 +1,4 @@
+/* Base light mode variables */
 :root {
     --bg: #f9f9f9;
     --text: #333;
@@ -13,6 +14,7 @@
     --toner-ok: #4caf50;
 }
 
+/* Dark mode overrides */
 body.dark {
     --bg: #121212;
     --text: #e0e0e0;
@@ -111,17 +113,20 @@ th {
     background: #ddd;
     margin-top: 10px;
 }
+
 #progressBar div {
     height: 20px;
     background: var(--accent);
     width: 0%;
     transition: width 0.2s ease;
 }
+
 #progressText {
     margin-top: 5px;
     font-size: 0.9em;
     color: var(--text);
 }
+
 .log {
     font-family: monospace;
     margin-top: 20px;
@@ -132,7 +137,7 @@ th {
     border: 1px solid var(--table-border);
 }
 
-/* DARK MODE FIXES FOR DEVICES TABLE */
+/* DARK MODE FIXES */
 body.dark table {
     background: var(--table-bg);
 }
@@ -160,6 +165,17 @@ body.dark .toner-label {
     color: var(--text);
 }
 
+body.dark input[type="text"],
+body.dark textarea {
+    background-color: #222;
+    color: #eee;
+    border: 1px solid #555;
+}
+
+body.dark input[type="text"]::placeholder {
+    color: #888;
+}
+
 .spinner {
     width: 20px;
     height: 20px;
@@ -179,22 +195,6 @@ body.dark .spinner {
     border-top: 3px solid transparent;
 }
 
-/* DISCOVERY PAGE INPUT + BUTTON STYLES */
-.input-ip {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid #ccc;
-    font-size: 1em;
-    width: 70px;
-    margin-left: 5px;
-}
-
-body.dark .input-ip {
-    background: #222;
-    border-color: #555;
-    color: #eee;
-}
-
 #start-btn {
     background: var(--accent);
     color: white;
@@ -211,8 +211,8 @@ body.dark .input-ip {
     background: #005fa3;
 }
 
-.update-btn {
-    background: #8a4fff;
+#update-btn {
+    background: purple;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -221,26 +221,9 @@ body.dark .input-ip {
     border-radius: 8px;
     cursor: pointer;
     transition: background 0.3s ease;
+    margin-left: 10px;
 }
 
-.update-btn:hover {
-    background: #6e3cd6;
-}
-
-button[title] {
-    position: relative;
-}
-
-button[title]:hover::after {
-    content: attr(title);
-    position: absolute;
-    top: 110%;
-    left: 0;
-    background: #333;
-    color: white;
-    padding: 5px 10px;
-    font-size: 0.8em;
-    white-space: nowrap;
-    border-radius: 6px;
-    z-index: 10;
+#update-btn:hover {
+    background: rebeccapurple;
 }
