@@ -8,7 +8,7 @@ A PHP-based printer discovery and monitoring tool built for use on a local netwo
 
 ### 1. Clone the Repository
 ```bash
-git clone https://github.com/YOUR_USERNAME/printers-php-app.git
+git clone https://github.com/plasticus/printers-php-app.git
 ```
 
 ### 2. Create a LAMP Stack in Portainer
