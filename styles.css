@@ -213,7 +213,7 @@ body.dark .spinner {
     background: #005fa3;
 }
 
-#update-btn {
+.update-btn {
     background: #6a1b9a; /* rich purple */
     color: white;
     border: none;
