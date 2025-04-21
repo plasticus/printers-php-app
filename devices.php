@@ -34,6 +34,9 @@ function getImpressions($pdo, $ip, $days) {
         <th>Last 90 Days</th>
         <th>Last Year</th>
         <th>Toner (Black)</th>
+        <th>Toner (Cyan)</th>
+        <th>Toner (Magenta)</th>
+        <th>Toner (Yellow)</th>
         <th>Location</th>
         <th>Notes</th>
         <th>Last Seen</th>
@@ -41,10 +44,15 @@ function getImpressions($pdo, $ip, $days) {
     </tr>
     <?php foreach ($devices as $row):
         $lowToner = is_numeric($row['toner_black']) && $row['toner_black'] < 15;
-        $tonerPercent = $row['toner_black'];
         $imp30 = getImpressions($pdo, $row['ip_address'], 30);
         $imp90 = getImpressions($pdo, $row['ip_address'], 90);
         $imp365 = getImpressions($pdo, $row['ip_address'], 365);
+
+        function renderToner($percent) {
+            if (!is_numeric($percent)) return "Unknown";
+            $color = $percent < 15 ? 'var(--toner-low)' : ($percent < 40 ? 'var(--toner-med)' : 'var(--toner-ok)');
+            return "<div class='toner-bar-container'><div class='toner-bar' style='width: {$percent}%; background-color: {$color};'></div></div><div class='toner-label'>{$percent}%</div>";
+        }
     ?>
     <tr class="<?= $lowToner ? 'low-toner' : '' ?>">
         <td><a href="http://<?= htmlspecialchars($row['ip_address']) ?>" target="_blank"><?= htmlspecialchars($row['ip_address']) ?></a></td>
@@ -53,19 +61,10 @@ function getImpressions($pdo, $ip, $days) {
         <td><?= $imp30 ?></td>
         <td><?= $imp90 ?></td>
         <td><?= $imp365 ?></td>
-        <td>
-            <?php if ($tonerPercent !== null): ?>
-                <div class="toner-bar-container">
-                    <div class="toner-bar" style="width: <?= $tonerPercent ?>%; background-color: <?=
-                        $tonerPercent < 15 ? 'var(--toner-low)' :
-                        ($tonerPercent < 40 ? 'var(--toner-med)' : 'var(--toner-ok)')
-                    ?>;"></div>
-                </div>
-                <div class="toner-label"><?= $tonerPercent ?>%</div>
-            <?php else: ?>
-                Unknown
-            <?php endif; ?>
-        </td>
+        <td><?= renderToner($row['toner_black']) ?></td>
+        <td><?= renderToner($row['toner_cyan']) ?></td>
+        <td><?= renderToner($row['toner_magenta']) ?></td>
+        <td><?= renderToner($row['toner_yellow']) ?></td>
         <form method="POST">
             <td><input type="text" name="location" value="<?= htmlspecialchars($row['location'] ?? '') ?>"></td>
             <td><textarea name="notes" rows="2"><?= htmlspecialchars($row['notes'] ?? '') ?></textarea></td>
