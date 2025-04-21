@@ -13,7 +13,7 @@
 <?php include("nav.php"); ?>
 
 <h1 style="display: flex; align-items: center; gap: 10px;">
-    Live Discovery
+    Discovery
     <div id="spinner" class="spinner" style="display: none;"></div>
 </h1>
 
