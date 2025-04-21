@@ -15,7 +15,8 @@ function getImpressions($pdo, $ip, $days) {
 function renderToner($percent) {
     if (!is_numeric($percent)) return "Unknown";
     $color = $percent < 15 ? 'var(--toner-low)' : ($percent < 40 ? 'var(--toner-med)' : 'var(--toner-ok)');
-    return "<div class='toner-bar-container'><div class='toner-bar' style='width: {$percent}%; background-color: {$color};'></div></div><div class='toner-label'>{$percent}%</div>";
+    $width = min($percent, 100);
+    return "<div class='toner-bar-container'><div class='toner-bar' style='width: {$width}%; background-color: {$color};'></div></div><div class='toner-label'>{$percent}%</div>";
 }
 ?>
 
