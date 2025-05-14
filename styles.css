@@ -35,32 +35,36 @@ body {
     padding: 20px;
 }
 
-.main-nav {
+/* === NAVIGATION === */
+.navbar {
+    background-color: #002244;
     display: flex;
     align-items: center;
-    justify-content: space-between;
-    background: var(--nav-bg);
-    padding: 15px 20px;
-    border-bottom: 2px solid var(--nav-border);
-    box-shadow: 0 2px 4px rgba(0,0,0,0.04);
+    padding: 0.5rem 1rem;
     margin: -20px -20px 20px -20px;
 }
 
-.main-nav .links {
-    display: flex;
-    gap: 20px;
+.navbar .logo {
+    height: 50px;
+    width: auto;
+    margin-right: 1rem;
 }
 
-.main-nav a {
+.navbar nav {
+    display: flex;
+    gap: 1rem;
+}
+
+.navbar nav a {
+    color: white;
     text-decoration: none;
-    color: var(--text);
     font-weight: bold;
     font-size: 1.05em;
-    transition: color 0.2s ease;
+    transition: text-decoration 0.2s ease;
 }
 
-.main-nav a:hover {
-    color: var(--accent);
+.navbar nav a:hover {
+    text-decoration: underline;
 }
 
 .toggle-theme {
@@ -69,6 +73,7 @@ body {
     user-select: none;
 }
 
+/* === TABLE === */
 table {
     border-collapse: collapse;
     width: 100%;
@@ -108,25 +113,23 @@ th {
     color: var(--text);
 }
 
+/* === DISCOVERY/UPDATE STATUS === */
 #progressBar {
     width: 100%;
     background: #ddd;
     margin-top: 10px;
 }
-
 #progressBar div {
     height: 20px;
     background: var(--accent);
     width: 0%;
     transition: width 0.2s ease;
 }
-
 #progressText {
     margin-top: 5px;
     font-size: 0.9em;
     color: var(--text);
 }
-
 .log {
     font-family: monospace;
     margin-top: 20px;
@@ -137,34 +140,28 @@ th {
     border: 1px solid var(--table-border);
 }
 
-/* DARK MODE FIXES */
+/* === DARK MODE FIXES === */
 body.dark table {
     background: var(--table-bg);
 }
-
 body.dark th {
     background: var(--th-bg);
     color: var(--text);
 }
-
 body.dark td {
     background: var(--table-bg);
     color: var(--text);
 }
-
 body.dark .low-toner {
     background-color: #441111;
 }
-
 body.dark .toner-bar-container {
     background: #444;
     border-color: #555;
 }
-
 body.dark .toner-label {
     color: var(--text);
 }
-
 body.dark input[type="text"],
 body.dark input[type="number"],
 body.dark textarea {
@@ -172,29 +169,24 @@ body.dark textarea {
     color: #eee;
     border: 1px solid #555;
 }
-
 body.dark input[type="text"]::placeholder,
 body.dark input[type="number"]::placeholder {
     color: #888;
 }
 
-.spinner {
-    width: 20px;
-    height: 20px;
-    border: 3px solid var(--text);
-    border-top: 3px solid transparent;
-    border-radius: 50%;
-    animation: spin 0.8s linear infinite;
+/* === INPUT + BUTTON STYLES === */
+input[type="text"] {
+    padding: 8px;
+    border-radius: 6px;
+    border: 1px solid var(--table-border);
+    font-size: 1em;
+    color: var(--text);
+    background: var(--table-bg);
+    transition: border-color 0.2s ease;
 }
-
-@keyframes spin {
-    0% { transform: rotate(0deg); }
-    100% { transform: rotate(360deg); }
-}
-
-body.dark .spinner {
-    border: 3px solid #aaa;
-    border-top: 3px solid transparent;
+input[type="text"]:focus {
+    outline: none;
+    border-color: var(--accent);
 }
 
 #start-btn {
@@ -208,13 +200,12 @@ body.dark .spinner {
     cursor: pointer;
     transition: background 0.3s ease;
 }
-
 #start-btn:hover {
     background: #005fa3;
 }
 
 .update-btn {
-    background: #6a1b9a; /* rich purple */
+    background: #6a1b9a;
     color: white;
     border: none;
     padding: 10px 20px;
@@ -225,22 +216,24 @@ body.dark .spinner {
     transition: background 0.3s ease;
     margin-left: 10px;
 }
-
-#update-btn:hover {
-    background: #8e24aa; /* lighter purple */
+.update-btn:hover {
+    background: #8e24aa;
 }
 
-input[type="text"] {
-    padding: 8px;
-    border-radius: 6px;
-    border: 1px solid var(--table-border);
-    font-size: 1em;
-    color: var(--text);
-    background: var(--table-bg);
-    transition: border-color 0.2s ease;
+/* === SPINNER === */
+.spinner {
+    width: 20px;
+    height: 20px;
+    border: 3px solid var(--text);
+    border-top: 3px solid transparent;
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
 }
-
-input[type="text"]:focus {
-    outline: none;
-    border-color: var(--accent);
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+body.dark .spinner {
+    border: 3px solid #aaa;
+    border-top: 3px solid transparent;
 }
