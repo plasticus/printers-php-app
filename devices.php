@@ -37,6 +37,7 @@ function renderToner($percent) {
         <th>IP Address</th>
         <th>Model</th>
         <th>Page Count</th>
+        <th>Last 7 Days</th>
         <th>Last 30 Days</th>
         <th>Last 90 Days</th>
         <th>Last Year</th>
@@ -51,6 +52,7 @@ function renderToner($percent) {
     </tr>
     <?php foreach ($devices as $row):
         $lowToner = is_numeric($row['toner_black']) && $row['toner_black'] < 15;
+        $imp7 = getImpressions($pdo, $row['ip_address'], 7);
         $imp30 = getImpressions($pdo, $row['ip_address'], 30);
         $imp90 = getImpressions($pdo, $row['ip_address'], 90);
         $imp365 = getImpressions($pdo, $row['ip_address'], 365);
@@ -59,6 +61,7 @@ function renderToner($percent) {
         <td><a href="http://<?= htmlspecialchars($row['ip_address']) ?>" target="_blank"><?= htmlspecialchars($row['ip_address']) ?></a></td>
         <td><?= htmlspecialchars($row['model']) ?></td>
         <td><?= htmlspecialchars($row['page_count']) ?></td>
+        <td><?= $imp7 ?></td>
         <td><?= $imp30 ?></td>
         <td><?= $imp90 ?></td>
         <td><?= $imp365 ?></td>
